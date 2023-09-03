@@ -4,6 +4,9 @@ import constants
 pygame.init()
 # This our surface
 screen = pygame.display.set_mode(constants.size)
+# This an icon (SHTO)
+icon = pygame.image.load("jokerge.jpg")
+pygame.display.set_icon(icon)
 
 pygame.display.set_caption("Game of TheNaturals  Pre-Alpha")
 # flag of the circle
