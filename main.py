@@ -9,7 +9,7 @@ class GameWindow:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((const.SCREEN_X, const.SCREEN_Y))
-        self.font_style = pygame.font.SysFont(None, 50)
+        self.font_style = pygame.font.SysFont(None, 40)
         # This an icon (SHTO)
         icon = pygame.image.load("jokerge.jpg")
         pygame.display.set_icon(icon)
@@ -46,7 +46,7 @@ class Player:
                 self.x - step > 0):
             self.x -= step
         else:
-            print("bad", direction, self.y, pygame.key)
+            pass
 
     def show(self):
         """
@@ -54,6 +54,25 @@ class Player:
         :return: None
         """
         pygame.draw.circle(self.win.screen, const.WHITE, (self.x, self.y), 15)
+
+
+
+class HandlerGame:
+    def __init__(self):
+        self.window = GameWindow()
+        self.view = GameView()
+
+    def main_menu(self, clock):
+        while 1:
+            clock.tick(const.FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    return
+            self.window.screen.fill(const.BLACK)
+            self.view.message("Write the arrows! Please tap Enter.", const.RED)
+            pygame.display.flip()
+
 
 
 class GameManager:
@@ -64,6 +83,7 @@ class GameManager:
         self.window = GameWindow()
         self.player = Player("Dima", 200, 400)
         self.view = GameView()
+        self.handler_key = HandlerGame()
 
     def lop(self):
         """
@@ -73,19 +93,18 @@ class GameManager:
         """
         clock = pygame.time.Clock()
         finish = False
-
         while not finish:
             clock.tick(const.FPS)
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     finish = True
                 elif event.type == pygame.KEYDOWN:
                     self.player.move(event.key, 100)
+                    if event.key == pygame.K_ESCAPE:
+                        self.handler_key.main_menu(clock)
 
             self.window.screen.fill(const.BLACK)
             self.player.show()
-            self.view.message("Write the arrows!", const.RED)
             pygame.display.flip()
 
         pygame.quit()
@@ -103,7 +122,7 @@ class GameView:
 
     def message(self, text, color):
         msg = self.win.font_style.render(text, True, color)
-        self.win.screen.blit(msg, (const.SCREEN_X - 500, const.SCREEN_Y - 100))
+        self.win.screen.blit(msg, (const.SCREEN_X/3, const.SCREEN_Y/2))
 
 
 game = GameManager()
