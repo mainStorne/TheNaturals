@@ -1,6 +1,13 @@
-# size of screen
-size = [800, 600]
-FPS = 10
+# WINDOW
+SCREEN_X = 1000
+SCREEN_Y = 900
+SCREEN_SIZE = [1000, 900]
+
+# FPS
+FPS = 30
+
+# COLORS
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (50, 82, 123)
+RED = (255, 0, 0)
