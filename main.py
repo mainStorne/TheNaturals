@@ -53,24 +53,28 @@ class Player:
         show player
         :return: None
         """
-        pygame.draw.circle(self.win.screen, const.WHITE, (self.x, self.y), 15)
+        pygame.draw.circle(self.win.screen, const.BLACK, (self.x, self.y), 15)
 
 
 
 class HandlerGame:
+    #TODO make this class useful!
     def __init__(self):
         self.window = GameWindow()
         self.view = GameView()
 
     def main_menu(self, clock):
-        while 1:
+        menu = False
+        while not menu:
             clock.tick(const.FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    return
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        menu = True
             self.window.screen.fill(const.BLACK)
-            self.view.message("Write the arrows! Please tap Enter.", const.RED)
+            self.view.message("Write the arrows! Please tap Enter.", const.RED, 4, 2)
             pygame.display.flip()
 
 
@@ -100,10 +104,12 @@ class GameManager:
                     finish = True
                 elif event.type == pygame.KEYDOWN:
                     self.player.move(event.key, 100)
+                    # very strange decision. remake it!
                     if event.key == pygame.K_ESCAPE:
                         self.handler_key.main_menu(clock)
 
-            self.window.screen.fill(const.BLACK)
+            self.window.screen.fill(const.BEIGE)
+            self.view.message("Tab escape {it's main menu}", const.ORANGE, 4, 2)
             self.player.show()
             pygame.display.flip()
 
@@ -120,9 +126,9 @@ class GameView:
     def show(self):
         pass
 
-    def message(self, text, color):
+    def message(self, text, color, x_move, y_move):
         msg = self.win.font_style.render(text, True, color)
-        self.win.screen.blit(msg, (const.SCREEN_X/3, const.SCREEN_Y/2))
+        self.win.screen.blit(msg, (const.SCREEN_X/x_move, const.SCREEN_Y/y_move))
 
 
 game = GameManager()
