@@ -37,12 +37,10 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = (const.SCREEN_X / 2, const.SCREEN_Y / 2 + 50)
         self.win = GameWindow()
         self.name = name
-        self.x = x
-        self.y = y
 
-    def key_move(self):
-        prev_y = self.y
-        prev_x = self.x
+    def update(self):
+        prev_y = self.rect.y
+        prev_x = self.rect.x
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_DOWN]:
@@ -58,15 +56,10 @@ class Player(pygame.sprite.Sprite):
                 prev_y < 0 or prev_y > const.SCREEN_Y):
             return
 
-        self.x = prev_x
-        self.y = prev_y
+        self.rect.x = prev_x
+        self.rect.y = prev_y
 
-    def show(self):
-        """
-        show player
-        :return: None
-        """
-        pygame.draw.circle(self.win.screen, const.BLACK, (self.x, self.y), player_block)
+
 
 
 
@@ -117,23 +110,25 @@ class GameManager:
             clock.tick(const.FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
                     # very strange decision. remake it!
                     if event.key == pygame.K_ESCAPE:
                         self.handler_key.main_menu(clock)
 
-            self.player.key_move()
             all_sprites.update()
             self.win.screen.fill(const.BEIGE)
             all_sprites.draw(self.win.screen)
             self.view.message("Tab escape {it's main menu}", const.ORANGE, 4, 2)
-            #self.player.show()
+
 
 
             pygame.display.flip()
 
-        pygame.quit()
+       # pygame.quit()
+
+
 
 
 class GameView:
