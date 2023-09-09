@@ -1,14 +1,14 @@
+import os.path
 import sys
 import pygame
 import constants as const
 
 
-player_block = 10
-UP = "player move to UP"
-DOWN = "player move to DOWN"
-LEFT = "player move to LEFT"
-RIGHT = "player move to RIGHT"
-STOP = "player STOP"
+
+file_game = os.path.dirname(__file__)
+
+
+
 
 class GameWindow:
     """
@@ -29,16 +29,16 @@ class Player(pygame.sprite.Sprite):
     """
     create a new person, move 'moves' on person and show him.
     """
-    def __init__(self, name, x, y):
+    def __init__(self, name):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((30, 30))
-        self.image.fill(const.BLACK)
+        player_image = pygame.image.load(os.path.join(file_game, "resize-jokerge.jpg")).convert()
+        self.image = player_image
         self.rect = self.image.get_rect()
         self.rect.center = (const.SCREEN_X / 2, const.SCREEN_Y / 2 + 50)
-        self.win = GameWindow()
         self.name = name
 
     def update(self):
+        player_block = 10
         prev_y = self.rect.y
         prev_x = self.rect.x
 
@@ -60,11 +60,6 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = prev_y
 
 
-
-
-
-
-
 class HandlerGame:
     #TODO make this class useful!
     def __init__(self):
@@ -72,17 +67,16 @@ class HandlerGame:
         self.view = GameView()
 
     def main_menu(self, clock):
-        menu = False
-        while not menu:
+        while 1:
             clock.tick(const.FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
+                    return
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
-                        menu = True
+                        return
             self.window.screen.fill(const.BLACK)
-            self.view.message("Write the arrows! Please tap Enter.", const.RED, 4, 2)
+            self.view.message("Tap Enter.", const.RED, 4, 2)
             pygame.display.flip()
 
 
@@ -93,7 +87,7 @@ class GameManager:
     """
     def __init__(self):
         self.win = GameWindow()
-        self.player = Player("Dima", 200, 400)
+        self.player = Player("Dima")
         self.view = GameView()
         self.handler_key = HandlerGame()
 
@@ -110,25 +104,18 @@ class GameManager:
             clock.tick(const.FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
-                    # very strange decision. remake it!
                     if event.key == pygame.K_ESCAPE:
                         self.handler_key.main_menu(clock)
 
             all_sprites.update()
             self.win.screen.fill(const.BEIGE)
             all_sprites.draw(self.win.screen)
-            self.view.message("Tab escape {it's main menu}", const.ORANGE, 4, 2)
-
-
-
+            self.view.message("Tab escape {HA-HA-HA}", const.ORANGE, 4, 2)
             pygame.display.flip()
 
        # pygame.quit()
-
-
 
 
 class GameView:
