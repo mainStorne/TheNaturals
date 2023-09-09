@@ -1,6 +1,14 @@
+import sys
 import pygame
 import constants as const
 
+
+player_block = 10
+UP = "player move to UP"
+DOWN = "player move to DOWN"
+LEFT = "player move to LEFT"
+RIGHT = "player move to RIGHT"
+STOP = "player STOP"
 
 class GameWindow:
     """
@@ -8,52 +16,59 @@ class GameWindow:
     """
     def __init__(self):
         pygame.init()
+        pygame.mixer.init()
         self.screen = pygame.display.set_mode((const.SCREEN_X, const.SCREEN_Y))
-        self.font_style = pygame.font.SysFont(None, 40)
+        self.font_style = pygame.font.SysFont("particular", 40)
         # This an icon (SHTO)
         icon = pygame.image.load("jokerge.jpg")
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Game of TheNaturals  Pre-Alpha")
 
 
-class Player:
+class Player(pygame.sprite.Sprite):
     """
     create a new person, move 'moves' on person and show him.
     """
     def __init__(self, name, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((30, 30))
+        self.image.fill(const.BLACK)
+        self.rect = self.image.get_rect()
+        self.rect.center = (const.SCREEN_X / 2, const.SCREEN_Y / 2 + 50)
         self.win = GameWindow()
         self.name = name
         self.x = x
         self.y = y
 
-    def move(self, direction, step):
-        """
-        move player on step and depend on direction
-        :param direction: the key on the input
-        :param step: move on step player
-        :return: None
-        """
-        if (direction == pygame.K_UP and
-                self.y - step > 0):
-            self.y -= step
-        elif (direction == pygame.K_DOWN and
-                self.y + step < const.SCREEN_Y):
-            self.y += step
-        elif (direction == pygame.K_RIGHT and
-                self.x + step < const.SCREEN_X):
-            self.x += step
-        elif (direction == pygame.K_LEFT and
-                self.x - step > 0):
-            self.x -= step
-        else:
-            pass
+    def key_move(self):
+        prev_y = self.y
+        prev_x = self.x
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_DOWN]:
+            prev_y += player_block
+        elif keys[pygame.K_UP]:
+            prev_y -= player_block
+        elif keys[pygame.K_LEFT]:
+            prev_x -= player_block
+        elif keys[pygame.K_RIGHT]:
+            prev_x += player_block
+
+        if (prev_x < 0 or prev_x > const.SCREEN_X or
+                prev_y < 0 or prev_y > const.SCREEN_Y):
+            return
+
+        self.x = prev_x
+        self.y = prev_y
 
     def show(self):
         """
         show player
         :return: None
         """
-        pygame.draw.circle(self.win.screen, const.BLACK, (self.x, self.y), 15)
+        pygame.draw.circle(self.win.screen, const.BLACK, (self.x, self.y), player_block)
+
+
 
 
 
@@ -84,7 +99,7 @@ class GameManager:
     General class, make game.
     """
     def __init__(self):
-        self.window = GameWindow()
+        self.win = GameWindow()
         self.player = Player("Dima", 200, 400)
         self.view = GameView()
         self.handler_key = HandlerGame()
@@ -96,21 +111,26 @@ class GameManager:
         :return: None
         """
         clock = pygame.time.Clock()
-        finish = False
-        while not finish:
+        all_sprites = pygame.sprite.Group()
+        all_sprites.add(self.player)
+        while 1:
             clock.tick(const.FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    finish = True
+                    sys.exit()
                 elif event.type == pygame.KEYDOWN:
-                    self.player.move(event.key, 100)
                     # very strange decision. remake it!
                     if event.key == pygame.K_ESCAPE:
                         self.handler_key.main_menu(clock)
 
-            self.window.screen.fill(const.BEIGE)
+            self.player.key_move()
+            all_sprites.update()
+            self.win.screen.fill(const.BEIGE)
+            all_sprites.draw(self.win.screen)
             self.view.message("Tab escape {it's main menu}", const.ORANGE, 4, 2)
-            self.player.show()
+            #self.player.show()
+
+
             pygame.display.flip()
 
         pygame.quit()
