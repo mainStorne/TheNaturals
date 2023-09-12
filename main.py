@@ -3,11 +3,7 @@ import sys
 import pygame
 import constants as const
 
-
-
 file_game = os.path.dirname(__file__)
-
-
 
 
 class GameWindow:
@@ -27,7 +23,7 @@ class GameWindow:
 
 class Player(pygame.sprite.Sprite):
     """
-    create a new person, move 'moves' on person and show him.
+    create a new person, move on person.
     """
     def __init__(self, name):
         pygame.sprite.Sprite.__init__(self)
@@ -38,6 +34,10 @@ class Player(pygame.sprite.Sprite):
         self.name = name
 
     def update(self):
+        """
+        update it's method sprites.
+        :return:
+        """
         player_block = 10
         prev_y = self.rect.y
         prev_x = self.rect.x
@@ -52,16 +52,18 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_RIGHT]:
             prev_x += player_block
 
-        if (prev_x < 0 or prev_x > const.SCREEN_X or
-                prev_y < 0 or prev_y > const.SCREEN_Y):
+        if (prev_x <= -10 or prev_x > const.SCREEN_X - 45 or
+                prev_y <= -10 or prev_y > const.SCREEN_Y - 45):
+            print("Game Over")
             return
+
 
         self.rect.x = prev_x
         self.rect.y = prev_y
 
 
 class HandlerGame:
-    #TODO make this class useful!
+    # TODO make this class useful!
     def __init__(self):
         self.window = GameWindow()
         self.view = GameView()
@@ -78,44 +80,20 @@ class HandlerGame:
             self.window.screen.fill(const.BLACK)
             self.view.message("Tap Enter.", const.RED, 4, 2)
             pygame.display.flip()
-
-
-
-class GameManager:
-    """
-    General class, make game.
-    """
-    def __init__(self):
-        self.win = GameWindow()
-        self.player = Player("Dima")
-        self.view = GameView()
-        self.handler_key = HandlerGame()
-
-    def lop(self):
-        """
-        main loop in the Game. Controls and calls methods Classes.
-        Handler key-words and draw objects in the game
-        :return: None
-        """
+    def death_p(self):
         clock = pygame.time.Clock()
-        all_sprites = pygame.sprite.Group()
-        all_sprites.add(self.player)
         while 1:
             clock.tick(const.FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        self.handler_key.main_menu(clock)
+                    return
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        return
 
-            all_sprites.update()
-            self.win.screen.fill(const.BEIGE)
-            all_sprites.draw(self.win.screen)
-            self.view.message("Tab escape {HA-HA-HA}", const.ORANGE, 4, 2)
-            pygame.display.flip()
-
-       # pygame.quit()
+        self.window.screen.fill(const.BLACK)
+        self.view.message("R - restart Q - quit", 1, 2)
+        pygame.display.flip()
 
 
 class GameView:
@@ -132,10 +110,36 @@ class GameView:
         msg = self.win.font_style.render(text, True, color)
         self.win.screen.blit(msg, (const.SCREEN_X/x_move, const.SCREEN_Y/y_move))
 
+def game_loop():
+        # main loop in the Game. Controls and calls methods Classes.
+        # Handler key-words and draw objects in the game
 
-game = GameManager()
-game.lop()
+        win = GameWindow()
+        player = Player("Dima")
+        view = GameView()
+        handler_key = HandlerGame()
 
+        clock = pygame.time.Clock()
+        all_sprites = pygame.sprite.Group()
+        all_sprites.add(player)
+        while 1:
+            clock.tick(const.FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        handler_key.main_menu(clock)
+
+            all_sprites.update()
+            win.screen.fill(const.BEIGE)
+            all_sprites.draw(win.screen)
+            view.message("Tab escape {HA-HA-HA}", const.ORANGE, 4, 2)
+            pygame.display.flip()
+
+
+
+game_loop()
 
 
 # pisipopi
