@@ -27,7 +27,7 @@ class Player(pygame.sprite.Sprite):
     """
     def __init__(self, name):
         pygame.sprite.Sprite.__init__(self)
-        player_image = pygame.image.load(os.path.join(file_game, "resize-jokerge.jpg")).convert()
+        player_image = pygame.image.load(os.path.join(file_game, "hero.jpg")).convert()
         self.image = player_image
         self.rect = self.image.get_rect()
         self.rect.center = (const.SCREEN_X / 2, const.SCREEN_Y / 2 + 50)
