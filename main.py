@@ -14,7 +14,6 @@ class GameWindow:
         pygame.init()
         pygame.mixer.init()
         self.screen = pygame.display.set_mode((const.SCREEN_X, const.SCREEN_Y))
-        self.font_style = pygame.font.SysFont("particular", 40)
         # This an icon (SHTO)
         icon = pygame.image.load("jokerge.jpg")
         pygame.display.set_icon(icon)
@@ -101,13 +100,14 @@ class GameView:
     Show game objects without player.
     """
     def __init__(self):
+        self.font_style = pygame.font.SysFont("particular", 40)
         self.win = GameWindow()
 
     def show(self):
         pass
 
     def message(self, text, color, x_move, y_move):
-        msg = self.win.font_style.render(text, True, color)
+        msg = self.font_style.render(text, True, color)
         self.win.screen.blit(msg, (const.SCREEN_X/x_move, const.SCREEN_Y/y_move))
 
 def game_loop():
