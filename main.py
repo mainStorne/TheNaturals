@@ -12,12 +12,14 @@ class GameWindow:
     """
     def __init__(self):
         pygame.init()
-        pygame.mixer.init()
+
         self.screen = pygame.display.set_mode((const.SCREEN_X, const.SCREEN_Y))
         # This an icon (SHTO)
         icon = pygame.image.load("jokerge.jpg")
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Game of TheNaturals  Pre-Alpha")
+
+
 
 
 class Player(pygame.sprite.Sprite):
@@ -77,7 +79,7 @@ class HandlerGame:
                     if event.key == pygame.K_RETURN:
                         return
             self.window.screen.fill(const.BLACK)
-            self.view.message("Tap Enter.", const.RED, 4, 2)
+            self.view.message("{Enter} - return ", const.RED, 10, 10)
             pygame.display.flip()
     def death_p(self):
         clock = pygame.time.Clock()
@@ -106,13 +108,17 @@ class GameView:
     def show(self):
         pass
 
-    def message(self, text, color, x_move, y_move):
+    def message(self, text, color, y_move, x_move):
         msg = self.font_style.render(text, True, color)
-        self.win.screen.blit(msg, (const.SCREEN_X/x_move, const.SCREEN_Y/y_move))
+        self.win.screen.blit(msg, (x_move, y_move))
 
 def game_loop():
         # main loop in the Game. Controls and calls methods Classes.
         # Handler key-words and draw objects in the game
+        pygame.mixer.init()
+        pygame.mixer_music.load("Revenge-_feat.-Cazok_.wav")
+        pygame.mixer_music.set_volume(0.1)
+        pygame.mixer_music.play()
 
         win = GameWindow()
         player = Player("Dima")
@@ -134,7 +140,7 @@ def game_loop():
             all_sprites.update()
             win.screen.fill(const.BEIGE)
             all_sprites.draw(win.screen)
-            view.message("Tab escape {HA-HA-HA}", const.ORANGE, 4, 2)
+            view.message("{~} - main menu", const.ORANGE, 10, 10)
             pygame.display.flip()
 
 
