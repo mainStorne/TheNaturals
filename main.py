@@ -18,6 +18,11 @@ class GameWindow:
         icon = pygame.image.load("jokerge.jpg")
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Game of TheNaturals  Pre-Alpha")
+        pygame.mixer.init()
+        pygame.mixer_music.load("Revenge-_feat.-Cazok_.wav")
+        pygame.mixer_music.set_volume(0.1)
+        pygame.mixer_music.play()
+
 
 
 
@@ -63,39 +68,43 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = prev_y
 
 
-class HandlerGame:
-    # TODO make this class useful!
-    def __init__(self):
-        self.window = GameWindow()
-        self.view = GameView()
 
-    def main_menu(self, clock):
-        while 1:
-            clock.tick(const.FPS)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    return
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
-                        return
-            self.window.screen.fill(const.BLACK)
-            self.view.message("{Enter} - return ", const.RED, 10, 10)
-            pygame.display.flip()
-    def death_p(self):
-        clock = pygame.time.Clock()
-        while 1:
-            clock.tick(const.FPS)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    return
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
-                        return
 
-        self.window.screen.fill(const.BLACK)
-        self.view.message("R - restart Q - quit", 1, 2)
+def main_menu():
+    window = GameWindow()
+    view = GameView()
+    clock = pygame.time.Clock()
+    while 1:
+        clock.tick(const.FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit(1)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    return
+
+        window.screen.fill(const.BLACK)
+        view.message("{Enter} - return ", const.RED, 10, 10)
         pygame.display.flip()
 
+
+def is_game_over():
+    window = GameWindow()
+    view = GameView()
+
+    clock = pygame.time.Clock()
+    while 1:
+        clock.tick(const.FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    return
+
+    window.screen.fill(const.BLACK)
+    view.message("R - restart Q - quit", 1, 2)
+    pygame.display.flip()
 
 class GameView:
     """
@@ -115,15 +124,11 @@ class GameView:
 def game_loop():
         # main loop in the Game. Controls and calls methods Classes.
         # Handler key-words and draw objects in the game
-        pygame.mixer.init()
-        pygame.mixer_music.load("Revenge-_feat.-Cazok_.wav")
-        pygame.mixer_music.set_volume(0.1)
-        pygame.mixer_music.play()
 
         win = GameWindow()
         player = Player("Dima")
         view = GameView()
-        handler_key = HandlerGame()
+        #handler_key = HandlerGame()
 
         clock = pygame.time.Clock()
         all_sprites = pygame.sprite.Group()
@@ -135,7 +140,7 @@ def game_loop():
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        handler_key.main_menu(clock)
+                        main_menu()
 
             all_sprites.update()
             win.screen.fill(const.BEIGE)
