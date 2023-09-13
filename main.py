@@ -8,11 +8,9 @@ file_game = os.path.dirname(__file__)
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
-        self.image = pygame.Surface([20, 20])
+        self.image = pygame.Surface([50, 50])
         self.image.fill(const.VIOLET)
         self.rect = self.image.get_rect()
-        self.rect.y = 10
-        self.rect.x = 10
         pygame.sprite.Sprite.__init__(self)
 
     def spawn(self):
@@ -28,6 +26,7 @@ class Player(pygame.sprite.Sprite):
         player_image = pygame.image.load(os.path.join(file_game, "hero.jpg")).convert()
         self.image = player_image
         self.rect = self.image.get_rect()
+        self.wins = 0
 
 
     def spawn(self):
@@ -83,6 +82,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = prev_y
 
 
+
 class GameWindow:
     """
     Window in the game, contains windows objects.
@@ -115,8 +115,6 @@ class GameView:
     def display(self, color):
         self.win.screen.fill(color)
 
-def collision(player: Player, enemy: Enemy):
-    pass
 
 def main_menu() -> None:
     view = GameView()
@@ -177,10 +175,11 @@ def game_loop() -> None:
         enemy.spawn()
         # TODO create delayed spawn enemy.
 
-
-        clock = pygame.time.Clock()
+        enemies = pygame.sprite.Group()
+        enemies.add(enemy)
         all_sprites = pygame.sprite.Group()
-        all_sprites.add(player, enemy)
+        all_sprites.add(player)
+        clock = pygame.time.Clock()
         while 1:
             clock.tick(const.FPS)
             for event in pygame.event.get():
@@ -193,8 +192,14 @@ def game_loop() -> None:
 
 
             all_sprites.update()
+            enemies.update()
+            kick = pygame.sprite.spritecollide(player, enemies, False)
+            if kick:
+                enemy.spawn()
+                player.wins += 1
             win.screen.fill(const.BEIGE)
             all_sprites.draw(win.screen)
+            enemies.draw(win.screen)
             view.message("{esc} - main menu", const.ORANGE, 10, 10)
             pygame.display.flip()
 
