@@ -1,4 +1,5 @@
 import os.path
+import random
 import sys
 import pygame
 import constants as const
@@ -44,13 +45,20 @@ class Player(pygame.sprite.Sprite):
     """
     create a new person, move on person.
     """
-    def __init__(self, name):
+    def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         player_image = pygame.image.load(os.path.join(file_game, "hero.jpg")).convert()
         self.image = player_image
         self.rect = self.image.get_rect()
-        self.rect.center = (const.SCREEN_X / 2, const.SCREEN_Y / 2 + 50)
-        self.name = name
+       # self.rect.center = (const.SCREEN_X / 2, const.SCREEN_Y / 2 + 50)
+        self.rect.y = 10
+        self.rect.x = 15
+
+    def spawn(self):
+        self.rect.y = random.randint(100, const.SCREEN_Y-100)
+        self.rect.x = random.randint(100, const.SCREEN_X-100)
+
+
 
     def update(self):
         """
@@ -73,7 +81,10 @@ class Player(pygame.sprite.Sprite):
 
         if (prev_x <= -10 or prev_x > const.SCREEN_X - 45 or
                 prev_y <= -10 or prev_y > const.SCREEN_Y - 45):
-            return
+            if not is_game_over():
+                self.spawn()
+                pygame.mixer_music.play()
+                return
 
         self.rect.x = prev_x
         self.rect.y = prev_y
@@ -100,21 +111,21 @@ def main_menu():
 
 
 def is_game_over():
+    pygame.mixer_music.stop()
     view = GameView()
-
     clock = pygame.time.Clock()
     while 1:
         clock.tick(const.FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return
+                sys.exit(1)
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
+                if event.key == pygame.K_r:
                     return
 
-    view.display(const.BLACK)
-    view.message("R - restart Q - quit", 1, 2)
-    pygame.display.flip()
+        view.display(const.GREY)
+        view.message("R - restart Q - quit", const.VIOLET, const.SCREEN_Y/2, 400)
+        pygame.display.flip()
 
 
 
@@ -126,13 +137,13 @@ def game_loop() -> None:
 
         pygame.mixer.init()
         pygame.mixer_music.load("Revenge-_feat.-Cazok_.wav")
-        pygame.mixer_music.set_volume(0.1)
+        pygame.mixer_music.set_volume(0.05)
         pygame.mixer_music.play()
 
-
         win = GameWindow()
-        player = Player("Dima")
         view = GameView()
+        player = Player()
+        player.spawn()
 
         clock = pygame.time.Clock()
         all_sprites = pygame.sprite.Group()
