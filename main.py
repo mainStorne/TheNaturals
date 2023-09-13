@@ -70,13 +70,13 @@ class Player(pygame.sprite.Sprite):
         prev_x = self.rect.x
 
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_DOWN]:
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             prev_y += player_block
-        elif keys[pygame.K_UP]:
+        elif keys[pygame.K_UP] or keys[pygame.K_w]:
             prev_y -= player_block
-        elif keys[pygame.K_LEFT]:
+        elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
             prev_x -= player_block
-        elif keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             prev_x += player_block
 
         if (prev_x <= -10 or prev_x > const.SCREEN_X - 45 or
@@ -122,6 +122,8 @@ def is_game_over():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     return
+                if event.key == pygame.K_q:
+                    sys.exit(1)
 
         view.display(const.GREY)
         view.message("R - restart Q - quit", const.VIOLET, const.SCREEN_Y/2, 400)
@@ -162,7 +164,7 @@ def game_loop() -> None:
             all_sprites.update()
             win.screen.fill(const.BEIGE)
             all_sprites.draw(win.screen)
-            view.message("{~} - main menu", const.ORANGE, 10, 10)
+            view.message("{esc} - main menu", const.ORANGE, 10, 10)
             pygame.display.flip()
 
 
