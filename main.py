@@ -62,7 +62,7 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
         """
-        update, it's method sprites.
+        update, it's method sprites. player move diagonally, horizontally and vertically
         :return:
         """
         player_block = 10
@@ -72,12 +72,28 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             prev_y += player_block
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                prev_x -= player_block
+            elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                prev_x += player_block
         elif keys[pygame.K_UP] or keys[pygame.K_w]:
             prev_y -= player_block
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                prev_x -= player_block
+            elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                prev_x += player_block
         elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
             prev_x -= player_block
+            if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                prev_y -= player_block
+            elif keys[pygame.K_UP] or keys[pygame.K_w]:
+                prev_y += player_block
         elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             prev_x += player_block
+            if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                prev_y -= player_block
+            elif keys[pygame.K_UP] or keys[pygame.K_w]:
+                prev_y += player_block
 
         if (prev_x <= -10 or prev_x > const.SCREEN_X - 45 or
                 prev_y <= -10 or prev_y > const.SCREEN_Y - 45):
