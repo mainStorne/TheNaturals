@@ -6,40 +6,18 @@ import constants as const
 
 file_game = os.path.dirname(__file__)
 
-
-class GameWindow:
-    """
-    Window in the game, contains windows objects.
-    """
+class Enemy(pygame.sprite.Sprite):
     def __init__(self):
-        pygame.init()
+        self.image = pygame.Surface([20, 20])
+        self.image.fill(const.VIOLET)
+        self.rect = self.image.get_rect()
+        self.rect.y = 10
+        self.rect.x = 10
+        pygame.sprite.Sprite.__init__(self)
 
-        self.screen = pygame.display.set_mode((const.SCREEN_X, const.SCREEN_Y))
-        # This an icon (SHTO)
-        icon = pygame.image.load("jokerge.jpg")
-        pygame.display.set_icon(icon)
-        pygame.display.set_caption("Game of TheNaturals  Pre-Alpha")
-
-
-class GameView:
-    """
-    Show game objects without player.
-    """
-    def __init__(self):
-        self.font_style = pygame.font.SysFont("particular", 40)
-        self.win = GameWindow()
-
-    def show(self):
-        pass
-
-    def message(self, text, color, y_move, x_move):
-        msg = self.font_style.render(text, True, color)
-        self.win.screen.blit(msg, (x_move, y_move))
-
-    def display(self, color):
-        self.win.screen.fill(color)
-
-
+    def spawn(self):
+        self.rect.y = random.randint(50, const.SCREEN_Y-50)
+        self.rect.x = random.randint(50, const.SCREEN_X-50)
 
 class Player(pygame.sprite.Sprite):
     """
@@ -50,11 +28,10 @@ class Player(pygame.sprite.Sprite):
         player_image = pygame.image.load(os.path.join(file_game, "hero.jpg")).convert()
         self.image = player_image
         self.rect = self.image.get_rect()
-       # self.rect.center = (const.SCREEN_X / 2, const.SCREEN_Y / 2 + 50)
-        self.rect.y = 10
-        self.rect.x = 15
+
 
     def spawn(self):
+        # TODO spawn not in player.
         self.rect.y = random.randint(100, const.SCREEN_Y-100)
         self.rect.x = random.randint(100, const.SCREEN_X-100)
 
@@ -106,9 +83,42 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = prev_y
 
 
+class GameWindow:
+    """
+    Window in the game, contains windows objects.
+    """
+    def __init__(self):
+        pygame.init()
+
+        self.screen = pygame.display.set_mode((const.SCREEN_X, const.SCREEN_Y))
+        # This an icon (SHTO)
+        icon = pygame.image.load("jokerge.jpg")
+        pygame.display.set_icon(icon)
+        pygame.display.set_caption("Game of TheNaturals  Pre-Alpha")
 
 
-def main_menu():
+class GameView:
+    """
+    Show game objects without player.
+    """
+    def __init__(self):
+        self.font_style = pygame.font.SysFont("particular", 40)
+        self.win = GameWindow()
+
+    def show(self):
+        pass
+
+    def message(self, text, color, y_move, x_move):
+        msg = self.font_style.render(text, True, color)
+        self.win.screen.blit(msg, (x_move, y_move))
+
+    def display(self, color):
+        self.win.screen.fill(color)
+
+def collision(player: Player, enemy: Enemy):
+    pass
+
+def main_menu() -> None:
     view = GameView()
     clock = pygame.time.Clock()
     while 1:
@@ -126,7 +136,7 @@ def main_menu():
         pygame.display.flip()
 
 
-def is_game_over():
+def is_game_over() -> None:
     pygame.mixer_music.stop()
     view = GameView()
     clock = pygame.time.Clock()
@@ -160,12 +170,17 @@ def game_loop() -> None:
 
         win = GameWindow()
         view = GameView()
+        # game characters
         player = Player()
         player.spawn()
+        enemy = Enemy()
+        enemy.spawn()
+        # TODO create delayed spawn enemy.
+
 
         clock = pygame.time.Clock()
         all_sprites = pygame.sprite.Group()
-        all_sprites.add(player)
+        all_sprites.add(player, enemy)
         while 1:
             clock.tick(const.FPS)
             for event in pygame.event.get():
