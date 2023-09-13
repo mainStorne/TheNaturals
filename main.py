@@ -35,6 +35,9 @@ class GameView:
         msg = self.font_style.render(text, True, color)
         self.win.screen.blit(msg, (x_move, y_move))
 
+    def display(self, color):
+        self.win.screen.fill(color)
+
 
 
 class Player(pygame.sprite.Sprite):
@@ -51,7 +54,7 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
         """
-        update it's method sprites.
+        update, it's method sprites.
         :return:
         """
         player_block = 10
@@ -70,9 +73,7 @@ class Player(pygame.sprite.Sprite):
 
         if (prev_x <= -10 or prev_x > const.SCREEN_X - 45 or
                 prev_y <= -10 or prev_y > const.SCREEN_Y - 45):
-            print("Game Over")
             return
-
 
         self.rect.x = prev_x
         self.rect.y = prev_y
@@ -81,7 +82,6 @@ class Player(pygame.sprite.Sprite):
 
 
 def main_menu():
-    window = GameWindow()
     view = GameView()
     clock = pygame.time.Clock()
     while 1:
@@ -94,13 +94,12 @@ def main_menu():
                     pygame.mixer_music.unpause()
                     return
 
-        window.screen.fill(const.BLACK)
+        view.display(const.BLACK)
         view.message("{Enter} - return ", const.RED, 10, 10)
         pygame.display.flip()
 
 
 def is_game_over():
-    window = GameWindow()
     view = GameView()
 
     clock = pygame.time.Clock()
@@ -113,7 +112,7 @@ def is_game_over():
                 if event.key == pygame.K_RETURN:
                     return
 
-    window.screen.fill(const.BLACK)
+    view.display(const.BLACK)
     view.message("R - restart Q - quit", 1, 2)
     pygame.display.flip()
 
@@ -147,6 +146,7 @@ def game_loop() -> None:
                     if event.key == pygame.K_ESCAPE:
                         pygame.mixer_music.pause()
                         main_menu()
+
 
             all_sprites.update()
             win.screen.fill(const.BEIGE)
