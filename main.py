@@ -18,12 +18,22 @@ class GameWindow:
         icon = pygame.image.load("jokerge.jpg")
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Game of TheNaturals  Pre-Alpha")
-        pygame.mixer.init()
-        pygame.mixer_music.load("Revenge-_feat.-Cazok_.wav")
-        pygame.mixer_music.set_volume(0.1)
-        pygame.mixer_music.play()
 
 
+class GameView:
+    """
+    Show game objects without player.
+    """
+    def __init__(self):
+        self.font_style = pygame.font.SysFont("particular", 40)
+        self.win = GameWindow()
+
+    def show(self):
+        pass
+
+    def message(self, text, color, y_move, x_move):
+        msg = self.font_style.render(text, True, color)
+        self.win.screen.blit(msg, (x_move, y_move))
 
 
 
@@ -81,6 +91,7 @@ def main_menu():
                 sys.exit(1)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
+                    pygame.mixer_music.unpause()
                     return
 
         window.screen.fill(const.BLACK)
@@ -106,29 +117,23 @@ def is_game_over():
     view.message("R - restart Q - quit", 1, 2)
     pygame.display.flip()
 
-class GameView:
-    """
-    Show game objects without player.
-    """
-    def __init__(self):
-        self.font_style = pygame.font.SysFont("particular", 40)
-        self.win = GameWindow()
 
-    def show(self):
-        pass
 
-    def message(self, text, color, y_move, x_move):
-        msg = self.font_style.render(text, True, color)
-        self.win.screen.blit(msg, (x_move, y_move))
+def game_loop() -> None:
+        """
+        main loop in the Game. Controls and calls methods Classes.
+        :return: None
+        """
 
-def game_loop():
-        # main loop in the Game. Controls and calls methods Classes.
-        # Handler key-words and draw objects in the game
+        pygame.mixer.init()
+        pygame.mixer_music.load("Revenge-_feat.-Cazok_.wav")
+        pygame.mixer_music.set_volume(0.1)
+        pygame.mixer_music.play()
+
 
         win = GameWindow()
         player = Player("Dima")
         view = GameView()
-        #handler_key = HandlerGame()
 
         clock = pygame.time.Clock()
         all_sprites = pygame.sprite.Group()
@@ -140,6 +145,7 @@ def game_loop():
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
+                        pygame.mixer_music.pause()
                         main_menu()
 
             all_sprites.update()
@@ -147,7 +153,6 @@ def game_loop():
             all_sprites.draw(win.screen)
             view.message("{~} - main menu", const.ORANGE, 10, 10)
             pygame.display.flip()
-
 
 
 game_loop()
