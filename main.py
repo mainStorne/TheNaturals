@@ -12,6 +12,8 @@ class Enemy(pygame.sprite.Sprite):
         self.image.fill(const.VIOLET)
         self.rect = self.image.get_rect()
         pygame.sprite.Sprite.__init__(self)
+        self.rect.y = random.randint(50, const.SCREEN_Y-50)
+        self.rect.x = random.randint(50, const.SCREEN_X-50)
 
     def spawn(self):
         self.rect.y = random.randint(50, const.SCREEN_Y-50)
@@ -27,6 +29,8 @@ class Player(pygame.sprite.Sprite):
         self.image = player_image
         self.rect = self.image.get_rect()
         self.wins = 0
+        self.rect.y = random.randint(100, const.SCREEN_Y - 100)
+        self.rect.x = random.randint(100, const.SCREEN_X - 100)
 
 
     def spawn(self):
@@ -81,6 +85,14 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = prev_x
         self.rect.y = prev_y
 
+class Wall(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([50, 50])
+        self.image.fill(const.GREY)
+        self.rect = self.image.get_rect()
+        self.rect.y = random.randint(50, const.SCREEN_Y - 50)
+        self.rect.x = random.randint(50, const.SCREEN_X - 50)
 
 
 class GameWindow:
@@ -95,6 +107,10 @@ class GameWindow:
         icon = pygame.image.load("jokerge.jpg")
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Game of TheNaturals  Pre-Alpha")
+        pygame.mixer.init()
+        pygame.mixer_music.load("Revenge-_feat.-Cazok_.wav")
+        pygame.mixer_music.set_volume(0.01)
+        pygame.mixer_music.play()
 
 
 class GameView:
@@ -104,7 +120,6 @@ class GameView:
     def __init__(self):
         self.font_style = pygame.font.SysFont("particular", 40)
         self.win = GameWindow()
-
     def show(self):
         pass
 
@@ -115,8 +130,19 @@ class GameView:
     def display(self, color):
         self.win.screen.fill(color)
 
+    def draw(self, enemies, players):
+        """
+        draw the groups
+        :param enemies: pygame.sprite.Sprite()
+        :param players: pygame.sprite.Sprite()
+        :return: None
+        """
+        enemies.draw(self.win.screen)
+        players.draw(self.win.screen)
+
 
 def main_menu() -> None:
+
     view = GameView()
     clock = pygame.time.Clock()
     while 1:
@@ -160,25 +186,21 @@ def game_loop() -> None:
         main loop in the Game. Controls and calls methods Classes.
         :return: None
         """
-
-        pygame.mixer.init()
-        pygame.mixer_music.load("Revenge-_feat.-Cazok_.wav")
-        pygame.mixer_music.set_volume(0.05)
-        pygame.mixer_music.play()
-
+        # TODO create delayed spawn enemy.
+        # game helpers
         win = GameWindow()
         view = GameView()
         # game characters
         player = Player()
-        player.spawn()
         enemy = Enemy()
-        enemy.spawn()
-        # TODO create delayed spawn enemy.
-
+        # make groups
         enemies = pygame.sprite.Group()
         enemies.add(enemy)
         all_sprites = pygame.sprite.Group()
         all_sprites.add(player)
+        # view
+
+
         clock = pygame.time.Clock()
         while 1:
             clock.tick(const.FPS)
@@ -186,22 +208,24 @@ def game_loop() -> None:
                 if event.type == pygame.QUIT:
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        pygame.mixer_music.pause()
-                        main_menu()
+                    pass
+                    # if event.key == pygame.K_ESCAPE:
+                    #     pygame.mixer_music.pause()
+                    #     main_menu()
 
-
-            all_sprites.update()
-            enemies.update()
             kick = pygame.sprite.spritecollide(player, enemies, False)
             if kick:
                 enemy.spawn()
                 player.wins += 1
-            win.screen.fill(const.BEIGE)
-            all_sprites.draw(win.screen)
-            enemies.draw(win.screen)
+
+            all_sprites.update()
+            enemies.update()
+            view.display(const.BEIGE)
+            view.draw(enemies, all_sprites)
             view.message("{esc} - main menu", const.ORANGE, 10, 10)
+            view.message(f'Score: {player.wins}', const.VIOLET, 40, 10)
             pygame.display.flip()
+
 
 
 game_loop()
