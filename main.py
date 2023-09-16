@@ -5,6 +5,8 @@ import pygame
 import constants as const
 
 file_game = os.path.dirname(__file__)
+music = True
+
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
@@ -16,13 +18,15 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x = random.randint(50, const.SCREEN_X-50)
 
     def spawn(self):
-        self.rect.y = random.randint(50, const.SCREEN_Y-50)
-        self.rect.x = random.randint(50, const.SCREEN_X-50)
+        self.rect.y = random.randint(50, const.SCREEN_Y - 50)
+        self.rect.x = random.randint(50, const.SCREEN_X - 50)
+
 
 class Player(pygame.sprite.Sprite):
     """
     create a new person, move on person.
     """
+
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         player_image = pygame.image.load(os.path.join(file_game, "hero.jpg")).convert()
@@ -32,13 +36,10 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = random.randint(100, const.SCREEN_Y - 100)
         self.rect.x = random.randint(100, const.SCREEN_X - 100)
 
-
     def spawn(self):
         # TODO spawn not in player.
-        self.rect.y = random.randint(100, const.SCREEN_Y-100)
-        self.rect.x = random.randint(100, const.SCREEN_X-100)
-
-
+        self.rect.y = random.randint(100, const.SCREEN_Y - 100)
+        self.rect.x = random.randint(100, const.SCREEN_X - 100)
 
     def update(self):
         """
@@ -94,11 +95,11 @@ class Wall(pygame.sprite.Sprite):
         self.rect.y = random.randint(50, const.SCREEN_Y - 50)
         self.rect.x = random.randint(50, const.SCREEN_X - 50)
 
-
 class GameWindow:
     """
     Window in the game, contains windows objects.
     """
+
     def __init__(self):
         pygame.init()
 
@@ -117,6 +118,7 @@ class GameView:
     """
     Show game objects without player.
     """
+
     def __init__(self):
         self.font_style = pygame.font.SysFont("particular", 40)
         self.win = GameWindow()
@@ -142,7 +144,11 @@ class GameView:
 
 
 def main_menu() -> None:
+<<<<<<< Updated upstream
 
+=======
+    global music
+>>>>>>> Stashed changes
     view = GameView()
     clock = pygame.time.Clock()
     while 1:
@@ -152,11 +158,23 @@ def main_menu() -> None:
                 sys.exit(1)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    pygame.mixer_music.unpause()
-                    return
+                    if music:
+                        pygame.mixer_music.unpause()
+                        return
+                    else:
+                        return
+                elif event.key == pygame.K_q:
+                    sys.exit(1)
+                elif event.key == pygame.K_m:
+                    music = not music
 
         view.display(const.BLACK)
-        view.message("{Enter} - return ", const.RED, 10, 10)
+        view.message("Enter - return ", const.RED, 350, 400)
+        view.message("Q - exit ", const.RED, 400, 400)
+        if music:
+            view.message("M - pause music ", const.RED, 450, 400)
+        else:
+            view.message("M - unpause music ", const.RED, 450, 400)
         pygame.display.flip()
 
 
@@ -176,16 +194,16 @@ def is_game_over() -> None:
                     sys.exit(1)
 
         view.display(const.GREY)
-        view.message("R - restart Q - quit", const.VIOLET, const.SCREEN_Y/2, 400)
+        view.message("R - restart Q - quit", const.VIOLET, const.SCREEN_Y / 2, 400)
         pygame.display.flip()
 
 
-
 def game_loop() -> None:
-        """
+    """
         main loop in the Game. Controls and calls methods Classes.
         :return: None
         """
+<<<<<<< Updated upstream
         # TODO create delayed spawn enemy.
         # game helpers
         win = GameWindow()
@@ -225,10 +243,52 @@ def game_loop() -> None:
             view.message("{esc} - main menu", const.ORANGE, 10, 10)
             view.message(f'Score: {player.wins}', const.VIOLET, 40, 10)
             pygame.display.flip()
+=======
+
+    pygame.mixer.init()
+    pygame.mixer_music.load("Revenge-_feat.-Cazok_.wav")
+    pygame.mixer_music.set_volume(0.05)
+    pygame.mixer_music.play()
+
+    win = GameWindow()
+    view = GameView()
+    # game characters
+    player = Player()
+    player.spawn()
+    enemy = Enemy()
+    enemy.spawn()
+    # TODO create delayed spawn enemy.
+
+    enemies = pygame.sprite.Group()
+    enemies.add(enemy)
+    all_sprites = pygame.sprite.Group()
+    all_sprites.add(player)
+    clock = pygame.time.Clock()
+    while 1:
+        clock.tick(const.FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.mixer_music.pause()
+                    main_menu()
+
+        all_sprites.update()
+        enemies.update()
+        kick = pygame.sprite.spritecollide(player, enemies, False)
+        if kick:
+            enemy.spawn()
+            player.wins += 1
+        win.screen.fill(const.BEIGE)
+        all_sprites.draw(win.screen)
+        enemies.draw(win.screen)
+        view.message("esc - main menu", const.ORANGE, 10, 10)
+        pygame.display.flip()
+>>>>>>> Stashed changes
 
 
 
 game_loop()
-
 
 # pisipopi
