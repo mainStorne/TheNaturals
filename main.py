@@ -1,3 +1,4 @@
+import math
 import os.path
 import random
 import sys
@@ -32,60 +33,69 @@ class Player(pygame.sprite.Sprite):
         # player_image = pygame.image.load(os.path.join(file_game, "hero.jpg")).convert()
         # self.image = player_image
         # self.rect = self.image.get_rect()
-        self.image = pygame.Surface((30, 30))
+        self.image = pygame.Surface((20, 20))
         self.image.fill(const.BLUE)
         self.rect = self.image.get_rect()
         self.wins = 0
-        self.rect.y = 150 #random.randint(100, const.SCREEN_Y - 100)
-        self.rect.x = 150 #random.randint(100, const.SCREEN_X - 100)
+        self.rect.y = 1500 // cell_size
+        self.rect.x = 1500 // cell_size
 
 
     def spawn(self):
         # TODO spawn not in player.
-        self.rect.y = random.randint(100, const.SCREEN_Y - 100)
-        self.rect.x = random.randint(100, const.SCREEN_X - 100)
+        self.rect.y = random.randint(100, const.SCREEN_Y - 100) // cell_size
+        self.rect.x = random.randint(100, const.SCREEN_X - 100) // cell_size
 
-    def update(self, player, walls):
+    def update(self):
         """
         update, it's method sprites. player move diagonally, horizontally and vertically
         :return:
         """
         player_block = 10
+
         prev_y = self.rect.y
         prev_x = self.rect.x
-        y = self.rect.y // 50
-        x = self.rect.x // 50
-
-
         keys = pygame.key.get_pressed()
-        if (keys[pygame.K_DOWN] or keys[pygame.K_s]) and world[y+1][x] == ' ':
-            prev_y += player_block
-            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                prev_x -= player_block
-            elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-                prev_x += player_block
-        elif (keys[pygame.K_UP] or keys[pygame.K_w]):
-            prev_y -= player_block
-            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                prev_x -= player_block
-            elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-                prev_x += player_block
-        elif (keys[pygame.K_LEFT] or keys[pygame.K_a]) and world[y][x] == ' ':
-            prev_x -= player_block
-            if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-                prev_y -= player_block
-            elif keys[pygame.K_UP] or keys[pygame.K_w]:
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
                 prev_y += player_block
-        elif (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and world[y][x+1] == ' ':
-            prev_x += player_block
-            if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                #prev_y = self.rect.bottom + player_block
+                print('hello', prev_y)
+                if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                    prev_x -= player_block
+                elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                    prev_x += player_block
+        elif keys[pygame.K_UP] or keys[pygame.K_w]:
                 prev_y -= player_block
-            elif keys[pygame.K_UP] or keys[pygame.K_w]:
-                prev_y += player_block
+                if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                    prev_x -= player_block
+                elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                    prev_x += player_block
+        elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                prev_x -= player_block
+                if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                    prev_y -= player_block
+                elif keys[pygame.K_UP] or keys[pygame.K_w]:
+                    prev_y += player_block
+        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                prev_x += player_block
+                if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                    prev_y -= player_block
+                elif keys[pygame.K_UP] or keys[pygame.K_w]:
+                    prev_y += player_block
 
+        y = round(prev_y / 30)
+        x = round(prev_x / 30)
 
-        self.rect.x = prev_x
-        self.rect.y = prev_y
+        y = prev_y // 30
+        x = prev_x // 30
+        if world[y][x] == ' ':
+            self.rect.x = prev_x
+            self.rect.y = prev_y
+        else:
+            return
+
+        print(self.rect.y, self.rect.x,
+              'y = ', y, 'x= ', x, 'zur', world[y][x], self.rect.bottom)
 
 
 class Wall(pygame.sprite.Sprite):
@@ -193,58 +203,24 @@ def is_game_over() -> None:
         view.message("R - restart Q - quit", const.VIOLET, const.SCREEN_Y / 2, 400)
         pygame.display.flip()
 
-
-world = []
-cell_size = 30
-world_height = const.SCREEN_Y // cell_size
-world_width = const.SCREEN_X // cell_size
-
-
-for row in range(world_height):
-    line = []
-    for col in range(world_width):
-        if (row == 0 or row == world_height - 1 or
-                col == 0 or col == world_width - 1):
-            line.append('#')
-        else:
-            line.append(' ')
-    world.append(line)
-
-print(world)
-
 def game_loop() -> None:
     """
     main loop in the Game. Controls and calls methods Classes.
     :return: None
     """
-    # TODO create delayed spawn enemy.
-
     win = GameWindow()
     player = Player()
-    all_sprites = pygame.sprite.Group()
-    all_sprites.add(player)
-
-    walls = pygame.sprite.Group()
-
-    for row in range(world_height):
-        for col in range(world_width):
-            x = row * cell_size
-            y = col * cell_size
-            if world[row][col] == 1:
-                w = Wall(x, y, cell_size, cell_size)
-                walls.add(w)
-            else:
-                pass
-    # TODO create delayed spawn enemy.
+    p_sprite = pygame.sprite.Group()
+    p_sprite.add(player)
 
     clock = pygame.time.Clock()
-
     while 1:
         clock.tick(const.FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
+
                 if event.key == pygame.K_ESCAPE:
                     pygame.mixer_music.pause()
                     main_menu()
@@ -258,13 +234,29 @@ def game_loop() -> None:
                 if world[row][col] == '#':
                     pygame.draw.rect(win.screen, const.BLACK, (x, y, cell_size, cell_size), 1)
                 else:
-                    pygame.draw.rect(win.screen, const.WHITE, (x, y, cell_size, cell_size), 0)
+                    pygame.draw.rect(win.screen, const.WHITE, (x, y, cell_size, cell_size), 1)
+        p_sprite.update()
+        p_sprite.draw(win.screen)
 
-        all_sprites.draw(win.screen)
-        walls.draw(win.screen)
-        all_sprites.update(player, walls)
-        #walls.update(walls)
         pygame.display.flip()
 
+world = []
+cell_size = 30
+world_height = const.SCREEN_Y // cell_size
+world_width = const.SCREEN_X // cell_size
+print(world_height, world_width)
+def main():
+    for row in range(world_height):
+        line = []
+        for col in range(world_width):
+            if (row == 0 or row == world_height - 1 or
+                    col == 0 or col == world_width - 1):
+                line.append('#')
+            else:
+                line.append(' ')
+        world.append(line)
 
-game_loop()
+    print(world)
+    game_loop()
+
+main()
