@@ -22,20 +22,6 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x = random.randint(50, const.SCREEN_X - 50)
 
 
- # class Player(pygame.sprite.Sprite):
- #    """
- #    create a new person, move on person.
- #    """
- #
- #    def __init__(self):
- #        pygame.sprite.Sprite.__init__(self)
- #        player_image = pygame.image.load(os.path.join(file_game, "hero.jpg")).convert()
- #        self.image = player_image
- #        self.rect = self.image.get_rect()
- #        self.wins = 0
- #        self.rect.y = 150 #random.randint(100, const.SCREEN_Y - 100)
- #        self.rect.x = 200 #random.randint(100, const.SCREEN_X - 100)
-
 class Player(pygame.sprite.Sprite):
     """
     create a new person, move on person.
@@ -43,8 +29,11 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        player_image = pygame.image.load(os.path.join(file_game, "hero.jpg")).convert()
-        self.image = player_image
+        # player_image = pygame.image.load(os.path.join(file_game, "hero.jpg")).convert()
+        # self.image = player_image
+        # self.rect = self.image.get_rect()
+        self.image = pygame.Surface((30, 30))
+        self.image.fill(const.BLUE)
         self.rect = self.image.get_rect()
         self.wins = 0
         self.rect.y = 150 #random.randint(100, const.SCREEN_Y - 100)
@@ -66,28 +55,28 @@ class Player(pygame.sprite.Sprite):
         prev_x = self.rect.x
         y = self.rect.y // 50
         x = self.rect.x // 50
-        station = None
+
 
         keys = pygame.key.get_pressed()
-        if (keys[pygame.K_DOWN] or keys[pygame.K_s]) and world[y+1][x] == '_':
+        if (keys[pygame.K_DOWN] or keys[pygame.K_s]) and world[y+1][x] == ' ':
             prev_y += player_block
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 prev_x -= player_block
             elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 prev_x += player_block
-        elif (keys[pygame.K_UP] or keys[pygame.K_w]) and world[y][x] == '_':
+        elif (keys[pygame.K_UP] or keys[pygame.K_w]):
             prev_y -= player_block
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 prev_x -= player_block
             elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 prev_x += player_block
-        elif (keys[pygame.K_LEFT] or keys[pygame.K_a]) and world[y][x] == '_':
+        elif (keys[pygame.K_LEFT] or keys[pygame.K_a]) and world[y][x] == ' ':
             prev_x -= player_block
             if keys[pygame.K_DOWN] or keys[pygame.K_s]:
                 prev_y -= player_block
             elif keys[pygame.K_UP] or keys[pygame.K_w]:
                 prev_y += player_block
-        elif (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and world[y][x+1] == '_':
+        elif (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and world[y][x+1] == ' ':
             prev_x += player_block
             if keys[pygame.K_DOWN] or keys[pygame.K_s]:
                 prev_y -= player_block
@@ -98,16 +87,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = prev_x
         self.rect.y = prev_y
 
-# def handler_collision(player, walls):
-#
-#     kick = pygame.sprite.spritecollide(player, walls, False)
-#     if kick:
-#         # self.rect.x =
-#
-#         return
-#     else:
-#         rect.x = prev_x
-#         rect.y = prev_y
+
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, height, width):
         pygame.sprite.Sprite.__init__(self)
@@ -117,22 +97,6 @@ class Wall(pygame.sprite.Sprite):
         self.rect.y = y
         self.rect.x = x
         self.win = GameWindow()
-
-
-    # def generate(self):
-    #     for i in range(self.size_wall):
-    #         for j in range(self.size_wall):
-    #             if (i == 0 or i == 9 or
-    #                     j == 0 or j == 9):
-    #                 self.wall[i][j] = '#'
-    #             else:
-    #                 self.wall[i][j] = '-'
-    #     print(self.wall)
-    def draw(self):
-        # for i in range(self.size_wall):
-        #     for j in range(self.size_wall):
-        #         if self.wall[i][j] == '#':
-        pass
 
 
 class GameWindow:
@@ -231,7 +195,7 @@ def is_game_over() -> None:
 
 
 world = []
-cell_size = 50
+cell_size = 30
 world_height = const.SCREEN_Y // cell_size
 world_width = const.SCREEN_X // cell_size
 
@@ -243,7 +207,7 @@ for row in range(world_height):
                 col == 0 or col == world_width - 1):
             line.append('#')
         else:
-            line.append('_')
+            line.append(' ')
     world.append(line)
 
 print(world)
@@ -255,20 +219,8 @@ def game_loop() -> None:
     """
     # TODO create delayed spawn enemy.
 
-    #pygame.mixer.init()
-    #pygame.mixer_music.load("Revenge-_feat.-Cazok_.wav")
-    #pygame.mixer_music.set_volume(0.05)
-    #pygame.mixer_music.play()
-
-    # game helpers
     win = GameWindow()
-    # view = GameView()
-    # # game characters
     player = Player()
-    # enemy = Enemy()
-    # # make groups
-    # enemies = pygame.sprite.Group()
-    # enemies.add(enemy)
     all_sprites = pygame.sprite.Group()
     all_sprites.add(player)
 
@@ -304,31 +256,15 @@ def game_loop() -> None:
                 x = row * cell_size
                 y = col * cell_size
                 if world[row][col] == '#':
-                    pygame.draw.rect(win.screen, const.BLACK, (x, y, cell_size, cell_size))
+                    pygame.draw.rect(win.screen, const.BLACK, (x, y, cell_size, cell_size), 1)
                 else:
-                    pygame.draw.rect(win.screen, const.WHITE, (x, y, cell_size, cell_size), 1)
+                    pygame.draw.rect(win.screen, const.WHITE, (x, y, cell_size, cell_size), 0)
 
         all_sprites.draw(win.screen)
-
-
-
+        walls.draw(win.screen)
         all_sprites.update(player, walls)
-
-        # all_sprites.update()
-        # enemies.update()
-        # view.display(const.BEIGE)
-        # view.draw(enemies, all_sprites)
-        # view.message(f'Score: {player.wins}', const.VIOLET, 40, 10)
-        # # view.message("esc - main menu", const.ORANGE, 10, 10)
-        # for w in walls:
-        #     w.draw()
-
+        #walls.update(walls)
         pygame.display.flip()
 
 
-
-
 game_loop()
-# wall = Wall()
-# wall.generate()
-# pisipopi
