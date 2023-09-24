@@ -55,48 +55,47 @@ class Player(pygame.sprite.Sprite):
 
         prev_y = self.rect.y
         prev_x = self.rect.x
+        x, y = 0, 0
         keys = pygame.key.get_pressed()
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+
                 prev_y += player_block
-                #prev_y = self.rect.bottom + player_block
-                print('hello', prev_y)
                 if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                     prev_x -= player_block
                 elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                     prev_x += player_block
+                y = round(prev_y / 30)
+                x = round(prev_x / 30)
         elif keys[pygame.K_UP] or keys[pygame.K_w]:
                 prev_y -= player_block
                 if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                     prev_x -= player_block
                 elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                     prev_x += player_block
+                y = prev_y // 30
+                x = prev_x // 30
         elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 prev_x -= player_block
                 if keys[pygame.K_DOWN] or keys[pygame.K_s]:
                     prev_y -= player_block
                 elif keys[pygame.K_UP] or keys[pygame.K_w]:
                     prev_y += player_block
+                y = prev_y // 30
+                x = prev_x // 30
         elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 prev_x += player_block
                 if keys[pygame.K_DOWN] or keys[pygame.K_s]:
                     prev_y -= player_block
                 elif keys[pygame.K_UP] or keys[pygame.K_w]:
                     prev_y += player_block
+                y = round(prev_y / 30)
+                x = round(prev_x / 30)
 
-        y = round(prev_y / 30)
-        x = round(prev_x / 30)
-
-        y = prev_y // 30
-        x = prev_x // 30
         if world[y][x] == ' ':
             self.rect.x = prev_x
             self.rect.y = prev_y
         else:
             return
-
-        print(self.rect.y, self.rect.x,
-              'y = ', y, 'x= ', x, 'zur', world[y][x], self.rect.bottom)
-
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, height, width):
